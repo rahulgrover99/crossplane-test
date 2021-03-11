@@ -1,0 +1,36 @@
+name: crossplane-provider-upgrade-test
+
+on: [push, pull_request]
+  # schedule:
+    # - cron:  '*/5 * * * *'
+  
+env:
+  KIND_VERSION: 'v0.7.0'
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Print a greeting
+        env:
+          MY_VAR: Hi there! My name is
+          FIRST_NAME: Rahul
+          LAST_NAME: Grover
+        run: |
+          echo $MY_VAR $FIRST_NAME $LAST_NAME.
+      - uses: actions/checkout@v2
+        with:
+          repository: crossplane/crossplane
+          ref: master
+      - uses: engineerd/setup-kind@v0.5.0
+        with:
+          version: ${{ env.KIND_VERSION }}
+      - name: Testing
+        run: |
+          kubectl cluster-info
+          kubectl get pods -n kube-system
+          echo "current-context:" $(kubectl config current-context)
+          echo "environment-kubeconfig:" ${KUBECONFIG}
+      - name: Run E2E Tests
+        run: go test -timeout 10m -v --tags=e2e ./test/e2e/...
+      
