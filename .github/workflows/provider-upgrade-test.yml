@@ -39,4 +39,9 @@ jobs:
         run: helm repo add crossplane-master https://charts.crossplane.io/master/ && helm repo update && helm install crossplane --namespace crossplane-system crossplane-master/crossplane --devel
       - name: Run E2E Tests
         run: go test -timeout 10m -v --tags=e2e ./test/e2e/...
+      - name: Install provider-gcp master
+        run: kubectl apply -f https://gist.githubusercontent.com/rahulgrover99/abb09ff0a6683140de6e86bc23de9d03/raw/3877e064225faefcc409b63a23400ceba44b269a/provider-gcp.yml
+      - name: Wait for the provider to get healthy
+        run: while [ $(kubectl get providers -o jsonpath='{.items[0].status.conditions[?(@.type=="Healthy")]..status}') != "True" ]; do sleep 10; done; echo "Provider is healthy :)"
+
       
