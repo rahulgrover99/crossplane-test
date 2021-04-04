@@ -37,7 +37,6 @@ jobs:
       - name: Checkout Crossplane Master
         uses: actions/checkout@v2
         with:
-          repository: crossplane/crossplane
           ref: master
       - name: Install Crossplane latest build from master
         run: helm repo add crossplane-master https://charts.crossplane.io/master/ && helm repo update && helm upgrade crossplane --namespace crossplane-system crossplane-master/crossplane --devel
